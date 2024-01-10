@@ -9,8 +9,8 @@ autumn_dat <- read.csv("autumn_data.csv")
 
 # scale covariate data
 spring_dat <- spring_dat %>% 
-  mutate(scaled_mean_precip = as.numeric(scale(mean_precip)), 
-         scaled_prop_days_below_freezing = as.numeric(scale(prop_days_below_freezing)), 
+  mutate(scaled_prop_days_below_freezing = as.numeric(scale(prop_days_below_freezing)), 
+         scaled_mean_precip = as.numeric(scale(mean_precip)), 
          scaled_prop_storm_days = as.numeric(scale(prop_storm_days)),
          scaled_prop_grass = as.numeric(scale(prop_grass)),
          scaled_prop_ag = as.numeric(scale(prop_ag)),
@@ -20,8 +20,8 @@ spring_dat <- spring_dat %>%
   replace_na(list(scaled_prop_ag = 0, scaled_prop_grass = 0))
 
 autumn_dat <- autumn_dat %>% 
-  mutate(scaled_mean_precip = as.numeric(scale(mean_precip)), 
-         scaled_prop_days_below_freezing = as.numeric(scale(prop_days_below_freezing)), 
+  mutate(scaled_prop_days_below_freezing = as.numeric(scale(prop_days_below_freezing)), 
+         scaled_mean_precip = as.numeric(scale(mean_precip)), 
          scaled_prop_storm_days = as.numeric(scale(prop_storm_days)), 
          scaled_prop_grass = as.numeric(scale(prop_grass)),
          scaled_prop_ag = as.numeric(scale(prop_ag)),
@@ -80,12 +80,12 @@ model {
   # random intercepts for individual
   for(i in 1:nind){ # individual index
     alpha_ODBA_spring[i] ~ dnorm(0, tau_ODBA_spring)
-    alpha_PTF_spring[i] ~ dnorm(0, tau_PTF_spring)
+    alpha_feed_spring[i] ~ dnorm(0, tau_feed_spring)
   } # i
   tau_ODBA_spring <- pow(sd_ODBA_spring, -2)
   sd_ODBA_spring ~ dunif(0, 1)
-  tau_PTF_spring <- pow(sd_PTF_spring, -2)
-  sd_PTF_spring ~ dunif(0, 1)
+  tau_feed_spring <- pow(sd_feed_spring, -2)
+  sd_feed_spring ~ dunif(0, 1)
        
   # ODBA observation variation
   for(a in 1:nobs1){ # individual/year index
@@ -95,8 +95,8 @@ model {
   
   # betas
   for(s in 1:n_sub_seasons){ # sub-season index
+    beta_ODBA_freeze_spring[s] ~ dnorm(0, 1)
     beta_ODBA_precip_spring[s] ~ dnorm(0, 1)
-    beta_ODBA_temp_spring[s] ~ dnorm(0, 1)
   } # s
     
   for(s in c(1, 3, 4)){ # winter and staging sub-seasons
@@ -104,11 +104,11 @@ model {
     beta_ODBA_grass_spring[s] ~ dnorm(0, 1)
     beta_ODBA_ag_spring[s] ~ dnorm(0, 1)
     beta_ODBA_bog_spring[s] ~ dnorm(0, 1)
-    beta_PTF_precip_spring[s] ~ dnorm(0, 1)
-    beta_PTF_temp_spring[s] ~ dnorm(0, 1)
-    beta_PTF_grass_spring[s] ~ dnorm(0, 1)
-    beta_PTF_ag_spring[s] ~ dnorm(0, 1)
-    beta_PTF_bog_spring[s] ~ dnorm(0, 1)
+    beta_feed_freeze_spring[s] ~ dnorm(0, 1)
+    beta_feed_precip_spring[s] ~ dnorm(0, 1)
+    beta_feed_grass_spring[s] ~ dnorm(0, 1)
+    beta_feed_ag_spring[s] ~ dnorm(0, 1)
+    beta_feed_bog_spring[s] ~ dnorm(0, 1)
   } # s
   
   for(s in c(2, 5)){ # migration sub-seasons
@@ -116,11 +116,11 @@ model {
     beta_ODBA_grass_spring[s] <- 0
     beta_ODBA_ag_spring[s] <- 0
     beta_ODBA_bog_spring[s] <- 0
-    beta_PTF_precip_spring[s] <- 0
-    beta_PTF_temp_spring[s] <- 0
-    beta_PTF_grass_spring[s] <- 0
-    beta_PTF_ag_spring[s] <- 0
-    beta_PTF_bog_spring[s] <- 0
+    beta_feed_freeze_spring[s] <- 0
+    beta_feed_precip_spring[s] <- 0
+    beta_feed_grass_spring[s] <- 0
+    beta_feed_ag_spring[s] <- 0
+    beta_feed_bog_spring[s] <- 0
   } # s
   
   # breeding sub-season
@@ -128,11 +128,11 @@ model {
   beta_ODBA_grass_spring[6] <- 0
   beta_ODBA_ag_spring[6] <- 0
   beta_ODBA_bog_spring[6] ~ dnorm(0, 1)
-  beta_PTF_precip_spring[6] ~ dnorm(0, 1)
-  beta_PTF_temp_spring[6] ~ dnorm(0, 1)
-  beta_PTF_grass_spring[6] <- 0
-  beta_PTF_ag_spring[6] <- 0
-  beta_PTF_bog_spring[6] ~ dnorm(0, 1)
+  beta_feed_freeze_spring[6] ~ dnorm(0, 1)
+  beta_feed_precip_spring[6] ~ dnorm(0, 1)
+  beta_feed_grass_spring[6] <- 0
+  beta_feed_ag_spring[6] <- 0
+  beta_feed_bog_spring[6] ~ dnorm(0, 1)
   
   ## effects of behavior on breeding outcome
   # random intercept for individual
@@ -149,12 +149,12 @@ model {
     sd_B_spring[k] ~ dunif(0, 10)
   # mean betas
     mu_beta_ODBA_spring[k] ~ dnorm(0, 0.01)
-    mu_beta_PTF_spring[k] ~ dnorm(0, 0.01)
+    mu_beta_feed_spring[k] ~ dnorm(0, 0.01)
   # sub-seasonal deviations for betas
     tau_beta_ODBA_spring[k] <- pow(sd_beta_ODBA_spring[k], -2)
     sd_beta_ODBA_spring[k] ~ dunif(0, 10)
-    tau_beta_PTF_spring[k] <- pow(sd_beta_PTF_spring[k], -2)
-    sd_beta_PTF_spring[k] ~ dunif(0, 10)
+    tau_beta_feed_spring[k] <- pow(sd_beta_feed_spring[k], -2)
+    sd_beta_feed_spring[k] ~ dunif(0, 10)
   # random variation for year effect
     tau_year_spring[k] <- pow(sd_year_spring[k], -2)
     sd_year_spring[k] ~ dunif(0, 10)
@@ -173,9 +173,9 @@ model {
   
   for(s in c(1, 3, 4, 6)){ # (non-migratory) sub-season index
     for(k in 1:(n_B - 1)){ # breeding outcome index
-      beta_PTF_spring[s, k] ~ dnorm(mu_beta_PTF_spring[k], tau_beta_PTF_spring[k])
+      beta_feed_spring[s, k] ~ dnorm(mu_beta_feed_spring[k], tau_beta_feed_spring[k])
     } # k
-    beta_PTF_spring[s, n_B] <- 0
+    beta_feed_spring[s, n_B] <- 0
   } # s
   
   # random year effect
@@ -197,12 +197,12 @@ model {
   # random intercepts for individual
   for(i in ind_autumn[]){ # individual index
     alpha_ODBA_autumn[i] ~ dnorm(0, tau_ODBA_autumn)
-    alpha_PTF_autumn[i] ~ dnorm(0, tau_PTF_autumn)
+    alpha_feed_autumn[i] ~ dnorm(0, tau_feed_autumn)
   } # i
   tau_ODBA_autumn <- pow(sd_ODBA_autumn, -2)
   sd_ODBA_autumn ~ dunif(0, 1)
-  tau_PTF_autumn <- pow(sd_PTF_autumn, -2)
-  sd_PTF_autumn ~ dunif(0, 1)
+  tau_feed_autumn <- pow(sd_feed_autumn, -2)
+  sd_feed_autumn ~ dunif(0, 1)
   
   # observation variation
   for(d in 1:nobs4){ # individual/year index
@@ -216,8 +216,8 @@ model {
       beta_ODBA_B_autumn[s, k] ~ dnorm(0, 1)
     } # k
     beta_ODBA_B_autumn[s, 1] <- 0
+    beta_ODBA_freeze_autumn[s] ~ dnorm(0, 1)
     beta_ODBA_precip_autumn[s] ~ dnorm(0, 1)
-    beta_ODBA_temp_autumn[s] ~ dnorm(0, 1)
   } # s
   
   for(s in c(3, 4, 6)){ # staging and winter sub-seasons
@@ -226,14 +226,14 @@ model {
     beta_ODBA_ag_autumn[s] ~ dnorm(0, 1)
     beta_ODBA_bog_autumn[s] ~ dnorm(0, 1)
     for(k in 2:n_B){ # breeding outcome index
-      beta_PTF_B_autumn[s, k] ~ dnorm(0, 1)
+      beta_feed_B_autumn[s, k] ~ dnorm(0, 1)
     } # k
-    beta_PTF_B_autumn[s, 1] <- 0
-    beta_PTF_precip_autumn[s] ~ dnorm(0, 1)
-    beta_PTF_temp_autumn[s] ~ dnorm(0, 1)
-    beta_PTF_grass_autumn[s] ~ dnorm(0, 1)
-    beta_PTF_ag_autumn[s] ~ dnorm(0, 1)
-    beta_PTF_bog_autumn[s] ~ dnorm(0, 1)
+    beta_feed_B_autumn[s, 1] <- 0
+    beta_feed_freeze_autumn[s] ~ dnorm(0, 1)
+    beta_feed_precip_autumn[s] ~ dnorm(0, 1)
+    beta_feed_grass_autumn[s] ~ dnorm(0, 1)
+    beta_feed_ag_autumn[s] ~ dnorm(0, 1)
+    beta_feed_bog_autumn[s] ~ dnorm(0, 1)
   } # s
   
   for(s in c(2, 5)){ # migratory sub-seasons
@@ -242,13 +242,13 @@ model {
     beta_ODBA_ag_autumn[s] <- 0
     beta_ODBA_bog_autumn[s] <- 0
     for(k in 1:n_B){ # breeding outcome index
-      beta_PTF_B_autumn[s, k] <- 0
+      beta_feed_B_autumn[s, k] <- 0
     } # k
-    beta_PTF_precip_autumn[s] <- 0
-    beta_PTF_temp_autumn[s] <- 0
-    beta_PTF_grass_autumn[s] <- 0
-    beta_PTF_ag_autumn[s] <- 0
-    beta_PTF_bog_autumn[s] <- 0
+    beta_feed_freeze_autumn[s] <- 0
+    beta_feed_precip_autumn[s] <- 0
+    beta_feed_grass_autumn[s] <- 0
+    beta_feed_ag_autumn[s] <- 0
+    beta_feed_bog_autumn[s] <- 0
   } # s
   
   # breeding sub-season
@@ -257,14 +257,14 @@ model {
   beta_ODBA_ag_autumn[1] <- 0
   beta_ODBA_bog_autumn[1] ~ dnorm(0, 1)
   for(k in 2:n_B){ # breeding outcome index
-    beta_PTF_B_autumn[1, k] ~ dnorm(0, 1)
+    beta_feed_B_autumn[1, k] ~ dnorm(0, 1)
   } # k
-  beta_PTF_B_autumn[1, 1] <- 0
-  beta_PTF_precip_autumn[1] ~ dnorm(0, 1)
-  beta_PTF_temp_autumn[1] ~ dnorm(0, 1)
-  beta_PTF_grass_autumn[1] <- 0
-  beta_PTF_ag_autumn[1] <- 0
-  beta_PTF_bog_autumn[1] ~ dnorm(0, 1)
+  beta_feed_B_autumn[1, 1] <- 0
+  beta_feed_freeze_autumn[1] ~ dnorm(0, 1)
+  beta_feed_precip_autumn[1] ~ dnorm(0, 1)
+  beta_feed_grass_autumn[1] <- 0
+  beta_feed_ag_autumn[1] <- 0
+  beta_feed_bog_autumn[1] ~ dnorm(0, 1)
   
   ## effects of behavior on survival
   # random intercept for individual
@@ -277,7 +277,7 @@ model {
   
   # mean betas
   mu_beta_ODBA_autumn ~ dnorm(0, 0.01)
-  mu_beta_PTF_autumn ~ dnorm(0, 0.01)
+  mu_beta_feed_autumn ~ dnorm(0, 0.01)
   
   # sub_seasonal betas
   for(s in c(1, 2, 3)){ # breeding, first migratory flight, first half staging
@@ -287,10 +287,10 @@ model {
   sd_beta_ODBA_autumn ~ dunif(0, 10)
   
   for(s in c(1, 3)){ # breeding, first half staging
-    beta_PTF_autumn[s] ~ dnorm(mu_beta_PTF_autumn, tau_beta_PTF_autumn)
+    beta_feed_autumn[s] ~ dnorm(mu_beta_feed_autumn, tau_beta_feed_autumn)
   } # s
-  tau_beta_PTF_autumn <- pow(sd_beta_PTF_autumn, -2)
-  sd_beta_PTF_autumn ~ dunif(0, 10)
+  tau_beta_feed_autumn <- pow(sd_beta_feed_autumn, -2)
+  sd_beta_feed_autumn ~ dunif(0, 10)
   
   # departure date beta
   beta_depart_breed ~ dnorm(0, 0.01)
@@ -313,8 +313,8 @@ model {
   # link function
   mu_log_ODBA_spring[ids2[b], years2[b], sub_seasons2[b]] <- 
       alpha_ODBA_spring[ids2[b]] + 
+      beta_ODBA_freeze_spring[sub_seasons2[b]] * freeze_spring2[b] + 
       beta_ODBA_precip_spring[sub_seasons2[b]] * precip_spring2[b] + 
-      beta_ODBA_temp_spring[sub_seasons2[b]] * temp_spring2[b] + 
       beta_ODBA_storm_spring[sub_seasons2[b]] * storm_spring2[b] +
       beta_ODBA_grass_spring[sub_seasons2[b]] * grass_spring2[b] + 
       beta_ODBA_ag_spring[sub_seasons2[b]] * ag_spring2[b] + 
@@ -323,16 +323,16 @@ model {
   
   # observation variation
   for(c in 1:nobs3){ # individual/year/(non-migratory) sub-season index
-    PTF_spring[c] ~ dbin(p_PTF_spring[ids3[c], years3[c], sub_seasons3[c]], n_spring[c])
+    feed_spring[c] ~ dbin(p_feed_spring[ids3[c], years3[c], sub_seasons3[c]], n_spring[c])
       
   # link function
-    logit(p_PTF_spring[ids3[c], years3[c], sub_seasons3[c]]) <- 
-      alpha_PTF_spring[ids3[c]] + 
-      beta_PTF_precip_spring[sub_seasons3[c]] * precip_spring3[c] + 
-      beta_PTF_temp_spring[sub_seasons3[c]] * temp_spring3[c] +
-      beta_PTF_grass_spring[sub_seasons3[c]] * grass_spring3[c] + 
-      beta_PTF_ag_spring[sub_seasons3[c]] * ag_spring3[c] + 
-      beta_PTF_bog_spring[sub_seasons3[c]] * bog_spring3[c]
+    logit(p_feed_spring[ids3[c], years3[c], sub_seasons3[c]]) <- 
+      alpha_feed_spring[ids3[c]] + 
+      beta_feed_freeze_spring[sub_seasons3[c]] * freeze_spring3[c] +
+      beta_feed_precip_spring[sub_seasons3[c]] * precip_spring3[c] + 
+      beta_feed_grass_spring[sub_seasons3[c]] * grass_spring3[c] + 
+      beta_feed_ag_spring[sub_seasons3[c]] * ag_spring3[c] + 
+      beta_feed_bog_spring[sub_seasons3[c]] * bog_spring3[c]
   } # c
   
   ## effects of behavior on breeding outcome
@@ -349,10 +349,10 @@ model {
         beta_ODBA_spring[4, k] * mu_log_ODBA_spring[ids1[a], years1[a], 4] +
         beta_ODBA_spring[5, k] * mu_log_ODBA_spring[ids1[a], years1[a], 5] +
         beta_ODBA_spring[6, k] * mu_log_ODBA_spring[ids1[a], years1[a], 6] +
-        beta_PTF_spring[1, k] *  logit(p_PTF_spring[ids1[a], years1[a], 1]) +
-        beta_PTF_spring[3, k] *  logit(p_PTF_spring[ids1[a], years1[a], 3]) +
-        beta_PTF_spring[4, k] *  logit(p_PTF_spring[ids1[a], years1[a], 4]) +
-        beta_PTF_spring[6, k] *  logit(p_PTF_spring[ids1[a], years1[a], 6]) +
+        beta_feed_spring[1, k] *  logit(p_feed_spring[ids1[a], years1[a], 1]) +
+        beta_feed_spring[3, k] *  logit(p_feed_spring[ids1[a], years1[a], 3]) +
+        beta_feed_spring[4, k] *  logit(p_feed_spring[ids1[a], years1[a], 4]) +
+        beta_feed_spring[6, k] *  logit(p_feed_spring[ids1[a], years1[a], 6]) +
         beta_arrival_breed[k] * arrival_day_breed[a] +
         eps_year_spring[years1[a], k]
   # transform into probabilities that sum to 1
@@ -371,8 +371,8 @@ model {
     mu_log_ODBA_autumn[ids5[e], years5[e], sub_seasons5[e]] <- 
       alpha_ODBA_autumn[ids5[e]] + 
       beta_ODBA_B_autumn[sub_seasons5[e], B_autumn5[e]] + 
+      beta_ODBA_freeze_autumn[sub_seasons5[e]] * freeze_autumn5[e] + 
       beta_ODBA_precip_autumn[sub_seasons5[e]] * precip_autumn5[e] + 
-      beta_ODBA_temp_autumn[sub_seasons5[e]] * temp_autumn5[e] + 
       beta_ODBA_storm_autumn[sub_seasons5[e]] * storm_autumn5[e] +
       beta_ODBA_grass_autumn[sub_seasons5[e]] * grass_autumn5[e] + 
       beta_ODBA_ag_autumn[sub_seasons5[e]] * ag_autumn5[e] + 
@@ -381,17 +381,17 @@ model {
   
   # observation variation
   for(f in 1:nobs6){ # individual/year/(non-migratory) sub-season index
-    PTF_autumn[f] ~ dbin(p_PTF_autumn[ids6[f], years6[f], sub_seasons6[f]], n_autumn[f])
+    feed_autumn[f] ~ dbin(p_feed_autumn[ids6[f], years6[f], sub_seasons6[f]], n_autumn[f])
     
     # link function
-    logit(p_PTF_autumn[ids6[f], years6[f], sub_seasons6[f]]) <- 
-      alpha_PTF_autumn[ids6[f]] + 
-      beta_PTF_B_autumn[sub_seasons6[f], B_autumn6[f]] + 
-      beta_PTF_precip_autumn[sub_seasons6[f]] * precip_autumn6[f] + 
-      beta_PTF_temp_autumn[sub_seasons6[f]] * temp_autumn6[f] +
-      beta_PTF_grass_autumn[sub_seasons6[f]] * grass_autumn6[f] + 
-      beta_PTF_ag_autumn[sub_seasons6[f]] * ag_autumn6[f] +
-      beta_PTF_bog_autumn[sub_seasons6[f]] * bog_autumn6[f]
+    logit(p_feed_autumn[ids6[f], years6[f], sub_seasons6[f]]) <- 
+      alpha_feed_autumn[ids6[f]] + 
+      beta_feed_B_autumn[sub_seasons6[f], B_autumn6[f]] + 
+      beta_feed_freeze_autumn[sub_seasons6[f]] * freeze_autumn6[f] +
+      beta_feed_precip_autumn[sub_seasons6[f]] * precip_autumn6[f] + 
+      beta_feed_grass_autumn[sub_seasons6[f]] * grass_autumn6[f] + 
+      beta_feed_ag_autumn[sub_seasons6[f]] * ag_autumn6[f] +
+      beta_feed_bog_autumn[sub_seasons6[f]] * bog_autumn6[f]
   } # f
   
   ## effects of behavior on survival
@@ -403,8 +403,8 @@ model {
       beta_ODBA_autumn[1] * mu_log_ODBA_autumn[ids4[d], years4[d], 1] + 
       beta_ODBA_autumn[2] * mu_log_ODBA_autumn[ids4[d], years4[d], 2] + 
       beta_ODBA_autumn[3] * mu_log_ODBA_autumn[ids4[d], years4[d], 3] + 
-      beta_PTF_autumn[1] * logit(p_PTF_autumn[ids4[d], years4[d], 1]) +
-      beta_PTF_autumn[3] * logit(p_PTF_autumn[ids4[d], years4[d], 3]) +
+      beta_feed_autumn[1] * logit(p_feed_autumn[ids4[d], years4[d], 1]) +
+      beta_feed_autumn[3] * logit(p_feed_autumn[ids4[d], years4[d], 3]) +
       beta_depart_breed * depart_day_breed[d] + 
       eps_year_autumn[years4[d]]
   } # d
@@ -430,8 +430,8 @@ jags_data <- list(
   nobs2 = nrow(spring_dat_all), ids2 = spring_dat_all$id, 
   years2 = spring_dat_all$year, sub_seasons2 = spring_dat_all$sub_season,
   log_ODBA_spring = spring_dat_all$log_ODBA,
+  freeze_spring2 = spring_dat_all$scaled_prop_days_below_freezing,
   precip_spring2 = spring_dat_all$scaled_mean_precip, 
-  temp_spring2 = spring_dat_all$scaled_prop_days_below_freezing, 
   storm_spring2 = spring_dat_all$scaled_prop_storm_days,
   grass_spring2 = spring_dat_all$scaled_prop_grass,
   ag_spring2 = spring_dat_all$scaled_prop_ag,
@@ -440,12 +440,12 @@ jags_data <- list(
   n_spring = spring_dat_non_mig$num_ACC_fixes,
   nobs3 = nrow(spring_dat_non_mig), ids3 = spring_dat_non_mig$id, 
   years3 = spring_dat_non_mig$year, sub_seasons3 = spring_dat_non_mig$sub_season,
+  freeze_spring3 = spring_dat_non_mig$scaled_prop_days_below_freezing, 
   precip_spring3 = spring_dat_non_mig$scaled_mean_precip, 
-  temp_spring3 = spring_dat_non_mig$scaled_prop_days_below_freezing, 
   grass_spring3 = spring_dat_non_mig$scaled_prop_grass,
   ag_spring3 = spring_dat_non_mig$scaled_prop_ag,
   bog_spring3 = spring_dat_non_mig$scaled_prop_bog,
-  PTF_spring = spring_dat_non_mig$num_feed_fixes,
+  feed_spring = spring_dat_non_mig$num_feed_fixes,
   # 4. d loop (autumn model, individual/year index)
   nobs4 = nrow(autumn_dat_annual), ids4 = autumn_dat_annual$id, 
   years4 = autumn_dat_annual$year, surv_autumn = autumn_dat_annual$annual_survival,
@@ -454,8 +454,8 @@ jags_data <- list(
   nobs5 = nrow(autumn_dat_all), ids5 = autumn_dat_all$id, 
   years5 = autumn_dat_all$year, sub_seasons5 = autumn_dat_all$sub_season,
   log_ODBA_autumn = autumn_dat_all$log_ODBA,
+  freeze_autumn5 = autumn_dat_all$scaled_prop_days_below_freezing, 
   precip_autumn5 = autumn_dat_all$scaled_mean_precip, 
-  temp_autumn5 = autumn_dat_all$scaled_prop_days_below_freezing, 
   storm_autumn5 = autumn_dat_all$scaled_prop_storm_days,
   grass_autumn5 = autumn_dat_all$scaled_prop_grass,
   ag_autumn5 = autumn_dat_all$scaled_prop_ag,
@@ -465,12 +465,12 @@ jags_data <- list(
   n_autumn = autumn_dat_non_mig$num_ACC_fixes,
   nobs6 = nrow(autumn_dat_non_mig), ids6 = autumn_dat_non_mig$id, 
   years6 = autumn_dat_non_mig$year, sub_seasons6 = autumn_dat_non_mig$sub_season,
+  freeze_autumn6 = autumn_dat_non_mig$scaled_prop_days_below_freezing,
   precip_autumn6 = autumn_dat_non_mig$scaled_mean_precip, 
-  temp_autumn6 = autumn_dat_non_mig$scaled_prop_days_below_freezing, 
   grass_autumn6 = autumn_dat_non_mig$scaled_prop_grass,
   ag_autumn6 = autumn_dat_non_mig$scaled_prop_ag,
   bog_autumn6 = autumn_dat_non_mig$scaled_prop_bog,
-  PTF_autumn = autumn_dat_non_mig$num_feed_fixes,
+  feed_autumn = autumn_dat_non_mig$num_feed_fixes,
   B_autumn6 = autumn_dat_non_mig$breeding_outcome
 )
 
@@ -515,47 +515,47 @@ na_fill_inits3 <- function(n_param, na_param, max){
 inits <- function() {
   list(
     sd_ODBA_spring = runif(1, 0, 1),
-    sd_PTF_spring = runif(1, 0, 1),
+    sd_feed_spring = runif(1, 0, 1),
     sd_ODBA_obs_spring = annual_inits(spring_dat_all),
+    beta_ODBA_freeze_spring = rnorm(6, mean = 0, sd = 1),
     beta_ODBA_precip_spring = rnorm(6, mean = 0, sd = 1),
-    beta_ODBA_temp_spring = rnorm(6, mean = 0, sd = 1),
     beta_ODBA_storm_spring = na_fill_inits(6, c(1, 3, 4, 6), 1),
     beta_ODBA_grass_spring = na_fill_inits(6, c(2, 5, 6), 1),
     beta_ODBA_ag_spring = na_fill_inits(6, c(2, 5, 6), 1),
     beta_ODBA_bog_spring = na_fill_inits(6, c(2, 5), 1),
-    beta_PTF_precip_spring = na_fill_inits(6, c(2, 5), 1),
-    beta_PTF_temp_spring = na_fill_inits(6, c(2, 5), 1),
-    beta_PTF_grass_spring = na_fill_inits(6, c(2, 5, 6), 1),
-    beta_PTF_ag_spring = na_fill_inits(6, c(2, 5, 6), 1),
-    beta_PTF_bog_spring = na_fill_inits(6, c(2, 5), 1),
+    beta_feed_freeze_spring = na_fill_inits(6, c(2, 5), 1),
+    beta_feed_precip_spring = na_fill_inits(6, c(2, 5), 1),
+    beta_feed_grass_spring = na_fill_inits(6, c(2, 5, 6), 1),
+    beta_feed_ag_spring = na_fill_inits(6, c(2, 5, 6), 1),
+    beta_feed_bog_spring = na_fill_inits(6, c(2, 5), 1),
     sd_B_spring = runif(2, 1, 10),
     mu_beta_ODBA_spring = rnorm(2, 0, 1),
     sd_beta_ODBA_spring = runif(2, 1, 10),
-    mu_beta_PTF_spring = rnorm(2, 0, 1),
-    sd_beta_PTF_spring = runif(2, 1, 10),
+    mu_beta_feed_spring = rnorm(2, 0, 1),
+    sd_beta_feed_spring = runif(2, 1, 10),
     beta_arrival_breed = na_fill_inits(3, 3, 1),
     sd_year_spring = runif(2, 1, 10),
     sd_ODBA_autumn = runif(1, 0, 1),
-    sd_PTF_autumn = runif(1, 0, 1),
+    sd_feed_autumn = runif(1, 0, 1),
     sd_ODBA_obs_autumn = annual_inits2(autumn_dat_all, spring_dat_all, nyears = 5)[-49,],
     beta_ODBA_B_autumn = na_fill_inits2(6, 3, NA, 1, 1),
+    beta_ODBA_freeze_autumn = rnorm(6, mean = 0, sd = 1),
     beta_ODBA_precip_autumn = rnorm(6, mean = 0, sd = 1),
-    beta_ODBA_temp_autumn = rnorm(6, mean = 0, sd = 1),
     beta_ODBA_storm_autumn = na_fill_inits(6, c(1, 3, 4, 6), 1),
     beta_ODBA_grass_autumn = na_fill_inits(6, c(1, 2, 5), 1),
     beta_ODBA_ag_autumn = na_fill_inits(6, c(1, 2, 5), 1),
     beta_ODBA_bog_autumn = na_fill_inits(6, c(2, 5), 1),
-    beta_PTF_B_autumn = na_fill_inits2(6, 3, c(2, 5), 1, 1),
-    beta_PTF_precip_autumn = na_fill_inits(6, c(2, 5), 1),
-    beta_PTF_temp_autumn = na_fill_inits(6, c(2, 5), 1),
-    beta_PTF_grass_autumn = na_fill_inits(6, c(1, 2, 5), 1),
-    beta_PTF_ag_autumn = na_fill_inits(6, c(1, 2, 5), 1),
-    beta_PTF_bog_autumn = na_fill_inits(6, c(2, 5), 1),
+    beta_feed_B_autumn = na_fill_inits2(6, 3, c(2, 5), 1, 1),
+    beta_feed_freeze_autumn = na_fill_inits(6, c(2, 5), 1),
+    beta_feed_precip_autumn = na_fill_inits(6, c(2, 5), 1),
+    beta_feed_grass_autumn = na_fill_inits(6, c(1, 2, 5), 1),
+    beta_feed_ag_autumn = na_fill_inits(6, c(1, 2, 5), 1),
+    beta_feed_bog_autumn = na_fill_inits(6, c(2, 5), 1),
     sd_surv_autumn = runif(1, 0, 10),
     mu_beta_ODBA_autumn = rnorm(1, 0, 1),
     sd_beta_ODBA_autumn = runif(1, 0, 10),
-    mu_beta_PTF_autumn = rnorm(1, 0, 1),
-    sd_beta_PTF_autumn = runif(1, 0, 10),
+    mu_beta_feed_autumn = rnorm(1, 0, 1),
+    sd_beta_feed_autumn = runif(1, 0, 10),
     beta_depart_breed = rnorm(1, 0, 1),
     sd_year_autumn = runif(1, 0, 10)
   )
@@ -563,56 +563,56 @@ inits <- function() {
 
 params <- c("alpha_ODBA_spring", 
             "sd_ODBA_spring",
-            "alpha_PTF_spring",
-            "sd_PTF_spring",
+            "alpha_feed_spring",
+            "sd_feed_spring",
             "sd_ODBA_obs_spring",
+            "beta_ODBA_freeze_spring", 
             "beta_ODBA_precip_spring", 
-            "beta_ODBA_temp_spring", 
             "beta_ODBA_storm_spring",
             "beta_ODBA_grass_spring",
             "beta_ODBA_ag_spring", 
             "beta_ODBA_bog_spring",
-            "beta_PTF_precip_spring",
-            "beta_PTF_temp_spring",
-            "beta_PTF_grass_spring",
-            "beta_PTF_ag_spring",
-            "beta_PTF_bog_spring",
+            "beta_feed_freeze_spring",
+            "beta_feed_precip_spring",
+            "beta_feed_grass_spring",
+            "beta_feed_ag_spring",
+            "beta_feed_bog_spring",
             "alpha_B_spring",
             "sd_B_spring",
             "beta_ODBA_spring",
-            "beta_PTF_spring",
+            "beta_feed_spring",
             "mu_beta_ODBA_spring",
             "sd_beta_ODBA_spring",
-            "mu_beta_PTF_spring",
-            "sd_beta_PTF_spring",
+            "mu_beta_feed_spring",
+            "sd_beta_feed_spring",
             "beta_arrival_breed",
             "sd_year_spring",
             "alpha_ODBA_autumn",
             "sd_ODBA_autumn",
-            "alpha_PTF_autumn",
-            "sd_PTF_autumn",
+            "alpha_feed_autumn",
+            "sd_feed_autumn",
             "sd_ODBA_obs_autumn",
             "beta_ODBA_B_autumn",
+            "beta_ODBA_freeze_autumn",
             "beta_ODBA_precip_autumn",
-            "beta_ODBA_temp_autumn",
             "beta_ODBA_storm_autumn",
             "beta_ODBA_grass_autumn",
             "beta_ODBA_ag_autumn",
             "beta_ODBA_bog_autumn",
-            "beta_PTF_B_autumn",
-            "beta_PTF_precip_autumn",
-            "beta_PTF_temp_autumn",
-            "beta_PTF_grass_autumn",
-            "beta_PTF_ag_autumn",
-            "beta_PTF_bog_autumn",
+            "beta_feed_B_autumn",
+            "beta_feed_freeze_autumn",
+            "beta_feed_precip_autumn",
+            "beta_feed_grass_autumn",
+            "beta_feed_ag_autumn",
+            "beta_feed_bog_autumn",
             "alpha_surv_autumn",
             "sd_surv_autumn",
             "beta_ODBA_autumn",
-            "beta_PTF_autumn",
+            "beta_feed_autumn",
             "mu_beta_ODBA_autumn",
             "sd_beta_ODBA_autumn",
-            "mu_beta_PTF_autumn",
-            "sd_beta_PTF_autumn",
+            "mu_beta_feed_autumn",
+            "sd_beta_feed_autumn",
             "beta_depart_breed",
             "sd_year_autumn")
 
