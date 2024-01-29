@@ -14,10 +14,7 @@ spring_dat <- spring_dat %>%
          scaled_prop_storm_days = as.numeric(scale(prop_storm_days)),
          scaled_prop_grass = as.numeric(scale(prop_grass)),
          scaled_prop_ag = as.numeric(scale(prop_ag)),
-         scaled_prop_bog = as.numeric(scale(prop_bog))) %>% 
-  # fill NAs for sub_seasons w/o these habitat types
-  # (needed for model to run, but negated by fixing betas at 0)
-  replace_na(list(scaled_prop_ag = 0, scaled_prop_grass = 0))
+         scaled_prop_bog = as.numeric(scale(prop_bog)))
 
 autumn_dat <- autumn_dat %>% 
   mutate(scaled_prop_days_below_freezing = as.numeric(scale(prop_days_below_freezing)), 
@@ -25,10 +22,7 @@ autumn_dat <- autumn_dat %>%
          scaled_prop_storm_days = as.numeric(scale(prop_storm_days)), 
          scaled_prop_grass = as.numeric(scale(prop_grass)),
          scaled_prop_ag = as.numeric(scale(prop_ag)),
-         scaled_prop_bog = as.numeric(scale(prop_bog))) %>% 
-  # fill NAs for sub_seasons w/o these habitat types
-  # (needed for model to run, but negated by fixing betas at 0)
-  replace_na(list(scaled_prop_ag = 0, scaled_prop_grass = 0))
+         scaled_prop_bog = as.numeric(scale(prop_bog)))
 
 # subset data for indexing
 # 1. a loop (spring sub-model, individual/year index)
