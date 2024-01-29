@@ -42,18 +42,18 @@ ___
 ### Data file column names
 - `id` - numerical identifier for each bird marked in the study
 - `year` - numerical identifier for each year in the study (i.e., 1-5 corresponds with 2018-2022)
-- `sub_season` - numerical identifier for the sub-season in the corresponding season
+- `sub_season` -numerical identifier for the sub-season in the corresponding season (spring_data.csv: 1 = late winter, 2 = first migration flight, 3 = first half of spring staging, 4 = second half of spring staging, 5 = second migration flight, 6 = early breeding; autumn_data.csv: 1 = late breeding, 2 = first migration flight, 3 = first half of autumn staging, 4 = second half of autumn staging, 5 = second migration flight, 6 = early winter)
 - `breeding_outcome` - 1 = successful breeding attempt, 2 = failed breeding attempt, 3 = breeding deferral
 - `breeding_success` - 1 = breeding success, 0 = breeding failure
 - `first_day` - day of year (i.e., days since 31 Dec the previous year) for the first day of the corresponding bird/year/sub-season
-- `log_ODBA` - log-transformed overall dynamic body acceleration
+- `log_ODBA` - log-transformed overall dynamic body acceleration (log(g))
 - `num_feed_fixes` - number of ACC fixes classified as feeding
 - `num_ACC_fixes` - total number of ACC fixes
-- `mean_precip` - mean daily cumulative precipitation
+- `mean_precip` - mean daily cumulative precipitation (mm)
 - `prop_days_below_freezing` - proportion of days below freezing
 - `prop_storm_days` - proportion of days with a severe storm
 - `prop_grass` - proportion of time spent in grasslands
 - `prop_ag` - proportion of time spent in (non-grassland) agricultural land
 - `prop_bog` - proportion of time spent in peat bogs
-- `survival` (autumn data only) - autumn survival
+- `survival` (autumn data only) - autumn survival (1 = survived, 0 = died)
 
