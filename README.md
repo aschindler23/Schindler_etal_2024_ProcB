@@ -1,7 +1,17 @@
-# Energetic trade-offs in migration decision-making, reproductive effort, and subsequent parental care in a long-distance migratory bird. *Proceedings of the Royal Society B*.
-## Schindler, A. R., A. D. Fox, C. K. Wikle, B. M. Ballard, A. J. Walsh, S. B. A. Kelly, L. Cao, L. R. Griffin, M. D. Weegman. 
+# Energetic trade-offs in migration decision-making, reproductive effort, and subsequent parental care in a long-distance migratory bird
 
-#### Model code and associated data files to quanitfy the effects of reproductive preparation during spring migration on subsequent breeding outcomes, breeding outcomes on autumn migration characteristics, and autumn migration characteristics on subsequent parental survival in Greenland white-fronted geese (*Anser albifrons flavirostris*). 
+This repository contains the data and code used in the following publication:
+
+Schindler, A. R., A. D. Fox, C. K. Wikle, B. M. Ballard, A. J. Walsh, S. B. A. Kelly, L. Cao, L. R. Griffin, M. D. Weegman. (2024). *Proceedings of the Royal Society B*, **291**:29120232016. https://doi.org/10.1098/rspb.2023.2016.
+
+Code/Data DOI: https://doi.org/10.5061/dryad.2547d7wzn
+
+All analyses were completed using R. See manuscript for details about analyses and supplementary data for example code.
+
+Please contact the corresponding author with questions about this data package or to seek potential collaborations using these data.
+___
+### Description
+Model code and associated data files to quanitfy the effects of reproductive preparation during spring migration on subsequent breeding outcomes, breeding outcomes on autumn migration characteristics, and autumn migration characteristics on subsequent parental survival in Greenland white-fronted geese (*Anser albifrons flavirostris*). 
 ___
 ### Authors
 Alexander R. Schindler  
