@@ -4,7 +4,8 @@ This repository contains the data and code used in the following publication:
 
 Schindler, A. R., A. D. Fox, C. K. Wikle, B. M. Ballard, A. J. Walsh, S. B. A. Kelly, L. Cao, L. R. Griffin, M. D. Weegman. (2024). *Proceedings of the Royal Society B*, **291**:29120232016. https://doi.org/10.1098/rspb.2023.2016.
 
-Code/Data DOI: https://doi.org/10.5061/dryad.2547d7wzn
+Data DOI: https://doi.org/10.5061/dryad.2547d7wzn
+Code DOI: https://doi.org/10.5281/zenodo.10581609
 
 All analyses were completed using R. See manuscript for details about analyses and supplementary data for example code.
 
